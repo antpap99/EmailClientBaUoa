@@ -14,7 +14,7 @@ public class EmailClient {
         LoginForm login = new LoginForm();
         login.setVisible(true);
             
-            //String username = login.getEmail();
+            //String username = login.getUsername();
             //String password = login.getPassword();
             //String server = login.getServer();
             

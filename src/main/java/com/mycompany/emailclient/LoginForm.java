@@ -8,12 +8,15 @@ import javax.mail.*;
 import javax.mail.internet.*;
 import java.util.Properties;
 import javax.swing.JOptionPane;
+import java.util.ArrayList;
+import java.util.*;
 
 /**
  *
  * @author antpap
  */
 public class LoginForm extends javax.swing.JFrame {
+    private ArrayList<Message> messageList;
     /**
      * Creates new form LoginForm
      */ 
@@ -22,7 +25,8 @@ public class LoginForm extends javax.swing.JFrame {
         initComponents();
     }
     
-     public class EmailReciever {
+     public class EmailReceiver {
+        //private ArrayList<Message> messageList;
         public boolean validateCredentials(String host, String username, String password) {
                 // Create a Properties object and set the IMAP server properties
                 Properties props = new Properties();
@@ -44,9 +48,11 @@ public class LoginForm extends javax.swing.JFrame {
                Folder emailFolder = store.getFolder("INBOX");
                 emailFolder.open(Folder.READ_ONLY);
 
-                Message[] messages = emailFolder.getMessages();
+                 Message[] messages = emailFolder.getMessages();
+                 messageList = new ArrayList<>(); // Create a new ArrayList
+                 Collections.addAll(messageList, messages); // Add all messages to the ArrayList
                 System.out.println("Number of emails: " + messages.length);
-
+                System.out.println("List of emails: " + messageList);
                         // Example: Print out subject of each email
                     for (Message message : messages) {
                          System.out.println("Email Subject: " + message.getSubject());
@@ -64,7 +70,20 @@ public class LoginForm extends javax.swing.JFrame {
             return true;
         }
    }
-    
+   // Method to retrieve the current username
+   public String getUsername() {
+       String username = TextEmail.getText();
+       return username;
+  }
+ 
+   // Method to retrieve the current password
+   public  String getPassword() {
+       String password = new String(TextPassword.getPassword());
+       return password;    
+  }
+   public ArrayList<Message> getMessages (){
+       return messageList;
+   }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -181,23 +200,21 @@ public class LoginForm extends javax.swing.JFrame {
             .addGroup(jInternalFrame1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(checkboxShowPassword)
-                    .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(jInternalFrame1Layout.createSequentialGroup()
-                            .addComponent(lblServer, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
-                            .addComponent(TextServer, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(BtnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jInternalFrame1Layout.createSequentialGroup()
-                                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lblEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(lblPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(28, 28, 28)
-                                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(TextEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
-                                    .addComponent(TextPassword))))))
-                .addContainerGap(245, Short.MAX_VALUE))
+                    .addComponent(BtnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jInternalFrame1Layout.createSequentialGroup()
+                        .addComponent(lblServer, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(28, 28, 28)
+                        .addComponent(TextServer, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jInternalFrame1Layout.createSequentialGroup()
+                        .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(28, 28, 28)
+                        .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(TextEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE)
+                            .addComponent(TextPassword)))
+                    .addComponent(checkboxShowPassword))
+                .addContainerGap(131, Short.MAX_VALUE))
         );
         jInternalFrame1Layout.setVerticalGroup(
             jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -210,15 +227,15 @@ public class LoginForm extends javax.swing.JFrame {
                 .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblPassword)
                     .addComponent(TextPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(12, 12, 12)
-                .addComponent(checkboxShowPassword)
-                .addGap(18, 18, 18)
-                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(checkboxShowPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30)
+                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblServer)
                     .addComponent(TextServer, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
                 .addComponent(BtnLogin)
-                .addGap(22, 22, 22))
+                .addGap(16, 16, 16))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -228,14 +245,14 @@ public class LoginForm extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(113, 113, 113)
                 .addComponent(jInternalFrame1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(74, Short.MAX_VALUE))
+                .addContainerGap(141, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(72, 72, 72)
                 .addComponent(jInternalFrame1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(121, Short.MAX_VALUE))
+                .addContainerGap(100, Short.MAX_VALUE))
         );
 
         pack();
@@ -254,8 +271,8 @@ public class LoginForm extends javax.swing.JFrame {
             String password = new String(TextPassword.getPassword());
             
         // Perform email validation
-        EmailReciever emailReciever = new EmailReciever();
-        boolean isAuthenticated = emailReciever.validateCredentials(host, username, password);
+        EmailReceiver emailReceiver = new EmailReceiver();
+        boolean isAuthenticated = emailReceiver.validateCredentials(host, username, password);
         
         if (isAuthenticated == true ) {
             // Authentication successful, proceed with login
@@ -281,7 +298,7 @@ public class LoginForm extends javax.swing.JFrame {
 
     private void checkboxShowPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkboxShowPasswordActionPerformed
         // TODO add your handling code here:
-        if(checkboxShowPassword.isSelected()){
+        if (checkboxShowPassword.isSelected()){
             TextPassword.setEchoChar((char)0);
         }
         else{
