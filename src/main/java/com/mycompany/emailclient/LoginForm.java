@@ -10,13 +10,15 @@ import java.util.Properties;
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
 import java.util.*;
+import javax.mail.Address;
 
 /**
  *
  * @author antpap
  */
 public class LoginForm extends javax.swing.JFrame {
-    private ArrayList<Message> messageList;
+    public ArrayList<Message> messageList;
+    public ArrayList<String> subjects;
     /**
      * Creates new form LoginForm
      */ 
@@ -53,11 +55,14 @@ public class LoginForm extends javax.swing.JFrame {
                  Collections.addAll(messageList, messages); // Add all messages to the ArrayList
                 System.out.println("Number of emails: " + messages.length);
                 System.out.println("List of emails: " + messageList);
-                        // Example: Print out subject of each email
-                    for (Message message : messages) {
-                         System.out.println("Email Subject: " + message.getSubject());
-                    }
-
+                ArrayList <String> subjects = new ArrayList<>();
+                // Example: Print out subject of each email
+                for (Message message : messages) {
+                    System.out.println("Email Subject: " + message.getSubject());
+                    String subject = message.getSubject();
+                    subjects.add(subject);
+                }
+                System.out.println(subjects);
                 emailFolder.close(false);
                     store.close();
                 } catch (NoSuchProviderException e) {
@@ -83,6 +88,9 @@ public class LoginForm extends javax.swing.JFrame {
   }
    public ArrayList<Message> getMessages (){
        return messageList;
+   }
+   public ArrayList<String> getSubjects (){
+       return subjects;
    }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -286,7 +294,9 @@ public class LoginForm extends javax.swing.JFrame {
         getmail getMailFrame = new getmail();
         getMailFrame.setVisible(true);
         JOptionPane.showMessageDialog(this, "Login successful <3 ", "Login Succesful", JOptionPane.INFORMATION_MESSAGE  );
+        getMailFrame.getAttributes();
         this.dispose(); // Close the current login frame
+        
     }
     private void TextServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TextServerActionPerformed
         // TODO add your handling code here:
