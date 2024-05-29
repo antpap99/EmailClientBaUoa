@@ -91,9 +91,6 @@ public class LoginForm extends javax.swing.JFrame {
    public ArrayList<Message> getMessages (){
        return messageList;
    }
-   public void getSubjects (){
-       emailclient.subjects =  Subjects;
-   }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
