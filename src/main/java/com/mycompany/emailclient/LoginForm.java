@@ -10,13 +10,17 @@ import java.util.Properties;
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
 import java.util.*;
+import javax.mail.Address;
 
 /**
  *
  * @author antpap
  */
 public class LoginForm extends javax.swing.JFrame {
-    private ArrayList<Message> messageList;
+    public ArrayList<Message> messageList;
+    public ArrayList<String> Subjects ;
+    EmailClient emailclient = new  EmailClient();
+    
     /**
      * Creates new form LoginForm
      */ 
@@ -27,7 +31,7 @@ public class LoginForm extends javax.swing.JFrame {
     
      public class EmailReceiver {
         //private ArrayList<Message> messageList;
-        public boolean validateCredentials(String host, String username, String password) {
+         public boolean validateCredentials(String host, String username, String password) {
                 // Create a Properties object and set the IMAP server properties
                 Properties props = new Properties();
                 
@@ -53,11 +57,14 @@ public class LoginForm extends javax.swing.JFrame {
                  Collections.addAll(messageList, messages); // Add all messages to the ArrayList
                 System.out.println("Number of emails: " + messages.length);
                 System.out.println("List of emails: " + messageList);
-                        // Example: Print out subject of each email
-                    for (Message message : messages) {
-                         System.out.println("Email Subject: " + message.getSubject());
-                    }
-
+                ArrayList <String> subjects = new ArrayList<>();
+                // Example: Print out subject of each email
+                for (Message message : messages) {
+                    System.out.println("Email Subject: " + message.getSubject());
+                    String subject = message.getSubject();
+                    emailclient.subject.add(subject);
+                }
+                System.out.println(emailclient.subject);
                 emailFolder.close(false);
                     store.close();
                 } catch (NoSuchProviderException e) {
@@ -71,7 +78,7 @@ public class LoginForm extends javax.swing.JFrame {
         }
    }
    // Method to retrieve the current username
-   public String getUsername() {
+    public String getUsername() {
        String username = TextEmail.getText();
        return username;
   }
@@ -242,17 +249,17 @@ public class LoginForm extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(113, 113, 113)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(131, Short.MAX_VALUE)
                 .addComponent(jInternalFrame1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(141, Short.MAX_VALUE))
+                .addGap(123, 123, 123))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(72, 72, 72)
+                .addGap(32, 32, 32)
                 .addComponent(jInternalFrame1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(100, Short.MAX_VALUE))
+                .addContainerGap(140, Short.MAX_VALUE))
         );
 
         pack();
@@ -286,7 +293,9 @@ public class LoginForm extends javax.swing.JFrame {
         getmail getMailFrame = new getmail();
         getMailFrame.setVisible(true);
         JOptionPane.showMessageDialog(this, "Login successful <3 ", "Login Succesful", JOptionPane.INFORMATION_MESSAGE  );
+        getMailFrame.getAttributes();
         this.dispose(); // Close the current login frame
+        
     }
     private void TextServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TextServerActionPerformed
         // TODO add your handling code here:
