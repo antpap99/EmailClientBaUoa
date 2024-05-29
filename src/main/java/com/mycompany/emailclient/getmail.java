@@ -17,13 +17,12 @@ import javax.swing.DefaultListModel;
  * @author antpap
  */
 public class getmail extends javax.swing.JFrame {
-   LoginForm login = new LoginForm();
+    public ArrayList<String> Subjects ;
+    EmailClient emailclient = new  EmailClient();
     public void getAttributes (){
         try{
-            
-            ArrayList<String> Subject = login.getSubjects();
-            System.out.println(Subject);
-            System.out.println("Subject list size: " + Subject.size());
+            Subjects = emailclient.subject;
+            System.out.println(Subjects);
             
         } catch (Exception e){
             e.printStackTrace();
@@ -187,7 +186,6 @@ public class getmail extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-         
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
