@@ -2,6 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  */
 package com.mycompany.emailclient;
+import static com.mycompany.emailclient.EmailClient.date;
+import static com.mycompany.emailclient.EmailClient.from;
+import static com.mycompany.emailclient.EmailClient.mail;
+import static com.mycompany.emailclient.EmailClient.subject;
+import static com.mycompany.emailclient.EmailClient.text;
 import java.util.ArrayList;
 import javax.mail.*;
 /**
@@ -11,38 +16,35 @@ import javax.mail.*;
 public class EmailClient {
     
     public EmailClient(){
-        
-    }
-    public static ArrayList<ArrayList<String>> mail = new ArrayList<>(); //οριζουμε την λιστα απο λιστες
-    public static ArrayList<String> subject = new ArrayList<>();//static διοτι μπορω να το αλλαξω απο τις αλλες κλασεις,ωστοσο οταν αλλαζει κατι για ενα αντικειμενο αλλαζει ταυτοχρονα για ολα δεδομενου της static υποστασης.
-    public static ArrayList<String> from = new ArrayList<>();
-    public static ArrayList<String> text = new ArrayList<>();
-    public static ArrayList<String> date = new ArrayList<>();
     
-        public static void main(String args[]) {
+    }
+        public static ArrayList<ArrayList<String>> mail = new ArrayList<>(); //οριζουμε την λιστα απο λιστες
+        public static ArrayList<String> subject = new ArrayList<>();//static διοτι μπορω να το αλλαξω απο τις αλλες κλασεις,ωστοσο οταν αλλαζει κατι για ενα αντικειμενο αλλαζει ταυτοχρονα για ολα δεδομενου της static υποστασης.
+        public static ArrayList<String> from = new ArrayList<>();
+        public static ArrayList<String> text = new ArrayList<>();
+        public static ArrayList<String> date = new ArrayList<>();
+    
+    
+          public static void main(String args[]) {                 
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new LoginForm().setVisible(true);
+            }
+        });
+        
+    
+
+     
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
+       
+        //</editor-fold
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {

@@ -10,7 +10,6 @@ import java.util.Properties;
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
 import java.util.*;
-import javax.mail.Address;
 
 /**
  *
@@ -18,20 +17,15 @@ import javax.mail.Address;
  */
 public class LoginForm extends javax.swing.JFrame {
     public ArrayList<Message> messageList;
-    public ArrayList<String> Subjects ;
-    EmailClient emailclient = new  EmailClient();
+    public ArrayList<String> Subjects;
+    
+    
+    EmailClient emailclient=new EmailClient();
     
     /**
      * Creates new form LoginForm
-     */ 
-    public LoginForm() {
-        
-        initComponents();
-    }
-    
-     public class EmailReceiver {
-        //private ArrayList<Message> messageList;
-         public boolean validateCredentials(String host, String username, String password) {
+     */    //private ArrayList<Message> messageList;
+    public boolean validateCredentials(String host, String username, String password) {
                 // Create a Properties object and set the IMAP server properties
                 Properties props = new Properties();
                 
@@ -40,6 +34,8 @@ public class LoginForm extends javax.swing.JFrame {
                 props.put("mail.imaps.port", "993");
                 props.put("mail.imaps.ssl.enable", "true");
                 
+                
+
                 // Create a Session instance
                 //Session session = Session.getDefaultInstance(props);
                 try {
@@ -49,24 +45,35 @@ public class LoginForm extends javax.swing.JFrame {
                 // Connect to the IMAP server
                 store.connect(host, username, password);
 
-               Folder emailFolder = store.getFolder("INBOX");
+                Folder emailFolder = store.getFolder("INBOX");
                 emailFolder.open(Folder.READ_ONLY);
 
                  Message[] messages = emailFolder.getMessages();
                  messageList = new ArrayList<>(); // Create a new ArrayList
                  Collections.addAll(messageList, messages); // Add all messages to the ArrayList
-                System.out.println("Number of emails: " + messages.length);
-                System.out.println("List of emails: " + messageList);
-                ArrayList <String> subjects = new ArrayList<>();
-                // Example: Print out subject of each email
+                 System.out.println("Number of emails: " + messages.length);
+                 System.out.println("List of emails: " + messageList);
+                 ArrayList<String> subjects=new ArrayList<>();
+                 
+               
+                        // Example: Print out subject of each email
                 for (Message message : messages) {
-                    System.out.println("Email Subject: " + message.getSubject());
-                    String subject = message.getSubject();
-                    emailclient.subject.add(subject);
+                         //System.out.println("Email Subject: " + message.getSubject());
+                         String subject=message.getSubject();
+                         emailclient.subject.add(subject);
+                         Address[] from=message.getFrom();
+                         for (Address address:from){
+                             if(address instanceof InternetAddress){
+                                 InternetAddress internetFrom=(InternetAddress) address;                                
+                                 emailclient.from.add(internetFrom.getAddress());
+                                 emailclient.from.add(internetFrom.getPersonal());
+                              }                                            
+                                           
+                         }
                 }
-                System.out.println(emailclient.subject);
+                 
                 emailFolder.close(false);
-                    store.close();
+                store.close();
                 } catch (NoSuchProviderException e) {
                             e.printStackTrace();
                             return false;
@@ -74,11 +81,22 @@ public class LoginForm extends javax.swing.JFrame {
                             e.printStackTrace();
                             return false;
                 }
+
             return true;
-        }
-   }
+    }
+    
+
+
+    public LoginForm() {        
+        initComponents();
+
+
+
+    }
+
+
    // Method to retrieve the current username
-    public String getUsername() {
+   public String getUsername() {
        String username = TextEmail.getText();
        return username;
   }
@@ -90,7 +108,10 @@ public class LoginForm extends javax.swing.JFrame {
   }
    public ArrayList<Message> getMessages (){
        return messageList;
+       
    }
+   
+   
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -249,17 +270,17 @@ public class LoginForm extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(131, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(113, 113, 113)
                 .addComponent(jInternalFrame1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(123, 123, 123))
+                .addContainerGap(141, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(32, 32, 32)
+                .addGap(72, 72, 72)
                 .addComponent(jInternalFrame1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(140, Short.MAX_VALUE))
+                .addContainerGap(100, Short.MAX_VALUE))
         );
 
         pack();
@@ -278,11 +299,11 @@ public class LoginForm extends javax.swing.JFrame {
             String password = new String(TextPassword.getPassword());
             
         // Perform email validation
-        EmailReceiver emailReceiver = new EmailReceiver();
-        boolean isAuthenticated = emailReceiver.validateCredentials(host, username, password);
+        LoginForm loginform = new LoginForm();
+        boolean isAuthenticated = loginform.validateCredentials(host, username, password);
         
         if (isAuthenticated == true ) {
-            // Authentication successful, proceed with login
+         // Authentication successful, proceed with login
             openGetMailFrame();
         } else {
             // Authentication failed, display error message to user
@@ -293,9 +314,8 @@ public class LoginForm extends javax.swing.JFrame {
         getmail getMailFrame = new getmail();
         getMailFrame.setVisible(true);
         JOptionPane.showMessageDialog(this, "Login successful <3 ", "Login Succesful", JOptionPane.INFORMATION_MESSAGE  );
-        getMailFrame.getAttributes();
+        getMailFrame.getAttribute();
         this.dispose(); // Close the current login frame
-        
     }
     private void TextServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TextServerActionPerformed
         // TODO add your handling code here:
@@ -318,37 +338,7 @@ public class LoginForm extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new LoginForm().setVisible(true);
-            }
-        });
-    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BtnLogin;
     private javax.swing.JTextField TextEmail;
