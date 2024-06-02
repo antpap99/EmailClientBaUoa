@@ -11,6 +11,8 @@ import javax.swing.JOptionPane;
 import java.util.ArrayList;
 import java.util.*;
 import javax.mail.Address;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  *
@@ -60,8 +62,11 @@ public class LoginForm extends javax.swing.JFrame {
                 // Example: Print out subject of each email
                 for (Message message : messages) {
                     String Subject = message.getSubject();
-                    //String Date = message.getSentDate();
+                    Date date = message.getSentDate();
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String datestring = formatter.format(date);
                     emailclient.subject.add(Subject);//πρωτο subject ειναι ιδιοηττα του αντικειμενου , δευτερο ειναι τοποικη μεταβλητη
+                    emailclient.date.add(datestring);
                     Address [] from = message.getFrom();
                     for(Address address : from){
                         if (address instanceof InternetAddress){
