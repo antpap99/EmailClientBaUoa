@@ -11,18 +11,19 @@ import javax.swing.JOptionPane;
 import java.util.ArrayList;
 import java.util.*;
 import javax.swing.DefaultListModel;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author antpap
  */
 public class getmail extends javax.swing.JFrame {
-    public ArrayList<String> Subjects ;
     EmailClient emailclient = new  EmailClient();
     public void getAttributes (){
         try{
-            Subjects = emailclient.subject;
-            System.out.println(Subjects);
+            System.out.println(emailclient.mail);
+            for (String i : emailclient.from)
+                System.out.println(i);
             
         } catch (Exception e){
             e.printStackTrace();
@@ -37,6 +38,28 @@ public class getmail extends javax.swing.JFrame {
      */
     public getmail() {
         initComponents();
+        addDataToTable();
+    }
+    private void addDataToTable() {
+        DefaultTableModel model = (DefaultTableModel) emailsTable.getModel();
+       
+        for (int i = 0; i < emailclient.subject.size(); i++) {
+            model.addRow(new Object[]{null, null, null, null});
+        }   
+        
+        for (int i = 0; i < emailclient.from.size(); i++) {
+            model.setValueAt(emailclient.from.get(i), i, 0); // Adds data to the from column
+        }
+        for (int i = 0; i < emailclient.subject.size(); i++) {
+            model.setValueAt(emailclient.subject.get(i), i, 1); // Adds data to the Name column
+        }
+        for (int i = 0; i < emailclient.date.size(); i++) {
+            model.setValueAt(emailclient.date.get(i), i, 2); // Adds data to the Age column
+        }
+        for (int i = 0; i < emailclient.text.size(); i++) {
+            model.setValueAt(emailclient.text.get(i), i, 3); // Adds data to the Country column
+        }
+        
     }
 
     /**

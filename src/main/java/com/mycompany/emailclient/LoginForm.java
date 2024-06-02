@@ -18,7 +18,6 @@ import javax.mail.Address;
  */
 public class LoginForm extends javax.swing.JFrame {
     public ArrayList<Message> messageList;
-    public ArrayList<String> Subjects ;
     EmailClient emailclient = new  EmailClient();
     
     /**
@@ -60,11 +59,19 @@ public class LoginForm extends javax.swing.JFrame {
                 ArrayList <String> subjects = new ArrayList<>();
                 // Example: Print out subject of each email
                 for (Message message : messages) {
-                    System.out.println("Email Subject: " + message.getSubject());
                     String subject = message.getSubject();
-                    emailclient.subject.add(subject);
+                    emailclient.subject.add(subject);//πρωτο subject ειναι ιδιοηττα του αντικειμενου , δευτερο ειναι τοποικη μεταβλητη
+                    Address [] from = message.getFrom();
+                    for(Address address : from){
+                        if (address instanceof InternetAddress){
+                            InternetAddress internetFrom = (InternetAddress) address;
+                            String FROM1 = internetFrom.getAddress();
+                            String FROM2 = internetFrom.getPersonal();
+                            String FROM = FROM1 + "," + FROM2;
+                            emailclient.from.add(FROM);
+                        }
+                    }
                 }
-                System.out.println(emailclient.subject);
                 emailFolder.close(false);
                     store.close();
                 } catch (NoSuchProviderException e) {
