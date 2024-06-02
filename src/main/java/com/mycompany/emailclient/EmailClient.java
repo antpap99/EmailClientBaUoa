@@ -18,6 +18,8 @@ public class EmailClient {
     public static ArrayList<String> from = new ArrayList<>();
     public static ArrayList<String> text = new ArrayList<>();
     public static ArrayList<String> date = new ArrayList<>();
+    public static String username;
+    public static String password;
     
         public static void main(String args[]) {
         /* Set the Nimbus look and feel */

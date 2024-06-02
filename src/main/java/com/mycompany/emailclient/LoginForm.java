@@ -59,8 +59,9 @@ public class LoginForm extends javax.swing.JFrame {
                 ArrayList <String> subjects = new ArrayList<>();
                 // Example: Print out subject of each email
                 for (Message message : messages) {
-                    String subject = message.getSubject();
-                    emailclient.subject.add(subject);//πρωτο subject ειναι ιδιοηττα του αντικειμενου , δευτερο ειναι τοποικη μεταβλητη
+                    String Subject = message.getSubject();
+                    //String Date = message.getSentDate();
+                    emailclient.subject.add(Subject);//πρωτο subject ειναι ιδιοηττα του αντικειμενου , δευτερο ειναι τοποικη μεταβλητη
                     Address [] from = message.getFrom();
                     for(Address address : from){
                         if (address instanceof InternetAddress){
@@ -281,8 +282,10 @@ public class LoginForm extends javax.swing.JFrame {
         
     // TODO add your handling code here:
             String username = TextEmail.getText();
+            emailclient.username = username ;
             String host = TextServer.getText();
             String password = new String(TextPassword.getPassword());
+            emailclient.password = password ;
             
         // Perform email validation
         EmailReceiver emailReceiver = new EmailReceiver();
@@ -299,7 +302,7 @@ public class LoginForm extends javax.swing.JFrame {
     private void openGetMailFrame() {
         getmail getMailFrame = new getmail();
         getMailFrame.setVisible(true);
-        JOptionPane.showMessageDialog(this, "Login successful <3 ", "Login Succesful", JOptionPane.INFORMATION_MESSAGE  );
+        JOptionPane.showMessageDialog(this, "Login successful", "Login Succesful", JOptionPane.INFORMATION_MESSAGE  );
         getMailFrame.getAttributes();
         this.dispose(); // Close the current login frame
         

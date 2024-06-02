@@ -120,6 +120,11 @@ public class getmail extends javax.swing.JFrame {
         splitPane.setRightComponent(jScrollPane2);
 
         btnCompose.setText("Compose");
+        btnCompose.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnComposeActionPerformed(evt);
+            }
+        });
 
         btnRefresh.setText("Refresh Inbox");
 
@@ -205,6 +210,15 @@ public class getmail extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
+    private void btnComposeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnComposeActionPerformed
+        // TODO add your handling code here:
+        openSendMail();
+    }//GEN-LAST:event_btnComposeActionPerformed
+    private void openSendMail() {
+        SendMail sendmail = new SendMail();
+        sendmail.setVisible(true);
+        
+    }
     /**
      * @param args the command line arguments
      */
