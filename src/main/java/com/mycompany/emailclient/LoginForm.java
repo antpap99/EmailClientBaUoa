@@ -65,16 +65,16 @@ public class LoginForm extends javax.swing.JFrame {
                     Date date = message.getSentDate();
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String datestring = formatter.format(date);
-                    emailclient.subject.add(Subject);//πρωτο subject ειναι ιδιοηττα του αντικειμενου , δευτερο ειναι τοποικη μεταβλητη
-                    emailclient.date.add(datestring);
+                    emailclient.subject.add(0, Subject);//πρωτο subject ειναι ιδιοηττα του αντικειμενου , δευτερο ειναι τοποικη μεταβλητη
+                    emailclient.date.add(0, datestring); // το 0 υποδηλωνει εισαγωγη στην κορυφη της ArrayList
                     Address [] from = message.getFrom();
                     for(Address address : from){
                         if (address instanceof InternetAddress){
                             InternetAddress internetFrom = (InternetAddress) address;
                             String FROM1 = internetFrom.getAddress();
                             String FROM2 = internetFrom.getPersonal();
-                            String FROM = FROM1 + "," + FROM2;
-                            emailclient.from.add(FROM);
+                            String FROM = FROM2 + " , " + FROM1;
+                            emailclient.from.add(0, FROM); // το 0 υποδηλωνει εισαγωγη στην κορυφη της ArrayList
                         }
                     }
                 }
