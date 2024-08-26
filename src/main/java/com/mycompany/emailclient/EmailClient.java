@@ -2,6 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  */
 package com.mycompany.emailclient;
+import java.io.File;
 import java.util.ArrayList;
 import javax.mail.*;
 /**

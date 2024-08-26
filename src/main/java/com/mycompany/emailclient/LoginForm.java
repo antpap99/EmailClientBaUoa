@@ -13,6 +13,7 @@ import java.util.*;
 import javax.mail.Address;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.io.*;
 
 /**
  *
@@ -50,12 +51,12 @@ public class LoginForm extends javax.swing.JFrame {
                 // Connect to the IMAP server
                 store.connect(host, username, password);
 
-               Folder emailFolder = store.getFolder("INBOX");
+                Folder emailFolder = store.getFolder("INBOX");
                 emailFolder.open(Folder.READ_ONLY);
 
-                 Message[] messages = emailFolder.getMessages();
-                 messageList = new ArrayList<>(); // Create a new ArrayList
-                 Collections.addAll(messageList, messages); // Add all messages to the ArrayList
+                Message[] messages = emailFolder.getMessages();
+                messageList = new ArrayList<>(); // Create a new ArrayList
+                Collections.addAll(messageList, messages); // Add all messages to the ArrayList
                 System.out.println("Number of emails: " + messages.length);
                 System.out.println("List of emails: " + messageList);
                 ArrayList <String> subjects = new ArrayList<>();
@@ -75,6 +76,26 @@ public class LoginForm extends javax.swing.JFrame {
                             String FROM2 = internetFrom.getPersonal();
                             String FROM = FROM2 + " , " + FROM1;
                             emailclient.from.add(0, FROM); // το 0 υποδηλωνει εισαγωγη στην κορυφη της ArrayList
+                        }
+                        if(message instanceof MimeMessage){
+                            MimeMessage mimeMessage = (MimeMessage) message;
+                            try{
+                                Object content = mimeMessage.getContent();
+                                if(content instanceof String){
+                                    String textContent = (String) content;
+                                } else if (content instanceof Multipart){
+                                    Multipart multipart = (Multipart) content;
+                                    for(int i = 0; i < multipart.getCount(); i++){
+                                        BodyPart bodyPart = multipart.getBodyPart(i);
+                                        if(bodyPart.isMimeType("text/plain")){
+                                            String plainText = (String) bodyPart.getContent();
+                                            emailclient.text.add(0, plainText);
+                                        }
+                                    }
+                                }
+                            }catch (IOException | MessagingException e) {
+                                    // Χειρισμός σφάλματος
+                            }       
                         }
                     }
                 }

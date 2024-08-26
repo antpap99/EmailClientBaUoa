@@ -15,18 +15,24 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.swing.JOptionPane;
+import javax.swing.JOptionPane;
+import java.io.File;
+import java.util.ArrayList;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.File;
 
 /**
  *
  * @author tzortzinakourte
  */
 public class SendMail extends javax.swing.JFrame {
-    
-    
-        EmailClient emailclient=new EmailClient();
-
-    
-    
+        
+        private static final long MAX_FILE_SIZE = 30 * 1024 * 1024; // 30 MB in bytes
+        private JFileChooser jFile;
+        EmailClient emailclient = new EmailClient();
+        private ArrayList<File> selectedFiles = new ArrayList<File>();
+        
     private void EmailSender(String to, String subject, String message) throws MessagingException {
         
     
@@ -64,17 +70,12 @@ public class SendMail extends javax.swing.JFrame {
         
        // Message mimeMessage = new MimeMessage(emailSession);
         //mimeMessage.setFrom(new InternetAddress(user));
-               
-
-    
-            
-    
-
     /**
      * Creates new form SendMail
      */
     public SendMail() {
         initComponents();
+        setDefaultCloseOperation(SendMail.DISPOSE_ON_CLOSE);
     }
 
     /**
@@ -87,23 +88,25 @@ public class SendMail extends javax.swing.JFrame {
     private void initComponents() {
 
         jInternalFrame1 = new javax.swing.JInternalFrame();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        lblTo = new javax.swing.JLabel();
+        lblSubject = new javax.swing.JLabel();
+        lblMessage = new javax.swing.JLabel();
         TextTo = new javax.swing.JTextField();
         TextSubject = new javax.swing.JTextField();
         TextMessage = new javax.swing.JTextField();
         btnSend = new javax.swing.JButton();
+        btnAttach = new javax.swing.JButton();
+        fileLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jInternalFrame1.setVisible(true);
 
-        jLabel1.setText("To:");
+        lblTo.setText("To:");
 
-        jLabel2.setText("Subject:");
+        lblSubject.setText("Subject:");
 
-        jLabel3.setText("Message:");
+        lblMessage.setText("Message:");
 
         btnSend.setText("Send");
         btnSend.addActionListener(new java.awt.event.ActionListener() {
@@ -111,6 +114,15 @@ public class SendMail extends javax.swing.JFrame {
                 btnSendActionPerformed(evt);
             }
         });
+
+        btnAttach.setText("Attach Files");
+        btnAttach.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAttachActionPerformed(evt);
+            }
+        });
+
+        fileLabel.setText("No File Selected");
 
         javax.swing.GroupLayout jInternalFrame1Layout = new javax.swing.GroupLayout(jInternalFrame1.getContentPane());
         jInternalFrame1.getContentPane().setLayout(jInternalFrame1Layout);
@@ -120,40 +132,48 @@ public class SendMail extends javax.swing.JFrame {
                 .addGap(70, 70, 70)
                 .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jInternalFrame1Layout.createSequentialGroup()
-                        .addGap(180, 180, 180)
-                        .addComponent(btnSend))
+                        .addComponent(lblTo, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(TextTo))
                     .addGroup(jInternalFrame1Layout.createSequentialGroup()
                         .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(lblSubject, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lblMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(TextMessage, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
-                            .addComponent(TextSubject)))
-                    .addGroup(jInternalFrame1Layout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(TextTo)))
-                .addContainerGap(107, Short.MAX_VALUE))
+                        .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(TextMessage, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
+                                .addComponent(TextSubject))
+                            .addGroup(jInternalFrame1Layout.createSequentialGroup()
+                                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(fileLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(btnAttach, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnSend, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(119, Short.MAX_VALUE))
         );
         jInternalFrame1Layout.setVerticalGroup(
             jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jInternalFrame1Layout.createSequentialGroup()
                 .addGap(47, 47, 47)
                 .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
+                    .addComponent(lblTo)
                     .addComponent(TextTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
+                    .addComponent(lblSubject)
                     .addComponent(TextSubject, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(9, 9, 9)
                 .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
+                    .addComponent(lblMessage)
                     .addComponent(TextMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
-                .addComponent(btnSend)
-                .addGap(44, 44, 44))
+                .addGap(18, 18, 18)
+                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnSend)
+                    .addComponent(btnAttach))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(fileLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(38, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -184,6 +204,44 @@ public class SendMail extends javax.swing.JFrame {
             }        
            
     }//GEN-LAST:event_btnSendActionPerformed
+
+    private void btnAttachActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAttachActionPerformed
+        // TODO add your handling code here:
+        jFile = new JFileChooser();
+        jFile.setMultiSelectionEnabled(true);
+        jFile.setDialogTitle("Choose Files and Directories");
+        jFile.setFileSelectionMode(jFile.FILES_AND_DIRECTORIES);
+        int result = jFile.showOpenDialog(null);
+           long totalSize = 0;
+           File [] SelectedFiles = new File [0];
+           if (result == jFile.APPROVE_OPTION) {
+               for (int i = 0; i < selectedFiles.size(); i++) {
+                fileLabel.setText("Selected: " + selectedFiles.get(i));
+            }
+                SelectedFiles = jFile.getSelectedFiles();
+                for (File file : SelectedFiles) {
+                    totalSize += file.length();
+                    String filePath = file.getAbsolutePath();
+                    String fileName = file.getName();
+                    System.out.println("Selected file path: " + filePath);
+                    System.out.println("Selected file name: " + fileName);
+                }
+           }
+           if (totalSize > MAX_FILE_SIZE) {
+               JOptionPane.showMessageDialog(null, 
+                            "File size exceeds 30 MB. Please select a smaller file.", 
+                            "File Too Large", 
+                            JOptionPane.ERROR_MESSAGE);
+           }
+           else{
+               for (File file : SelectedFiles){
+                  selectedFiles.add(file.getName());
+               }
+               System.out.println("the file is:" + emailclient.selectedFiles);
+               
+           }
+        
+    }//GEN-LAST:event_btnAttachActionPerformed
 
     /**
      * @param args the command line arguments
@@ -224,10 +282,12 @@ public class SendMail extends javax.swing.JFrame {
     private javax.swing.JTextField TextMessage;
     private javax.swing.JTextField TextSubject;
     private javax.swing.JTextField TextTo;
+    private javax.swing.JButton btnAttach;
     private javax.swing.JButton btnSend;
+    private javax.swing.JLabel fileLabel;
     private javax.swing.JInternalFrame jInternalFrame1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel lblMessage;
+    private javax.swing.JLabel lblSubject;
+    private javax.swing.JLabel lblTo;
     // End of variables declaration//GEN-END:variables
 }
