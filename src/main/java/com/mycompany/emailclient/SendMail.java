@@ -21,6 +21,15 @@ import java.util.ArrayList;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.mail.Multipart;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMultipart;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+
 
 /**
  *
@@ -32,16 +41,19 @@ public class SendMail extends javax.swing.JFrame {
         private JFileChooser jFile;
         EmailClient emailclient = new EmailClient();
         private ArrayList<File> selectedFiles = new ArrayList<File>();
+        private File [] SelectedFiles ; 
         
-    private void EmailSender(String to, String subject, String message) throws MessagingException {
+        
+    private void EmailSender(String to, String subject, String message, File[] attachments) throws MessagingException {
         
     
-        System.out.println("Email sent to " + to + " with subject: " + subject);
-        System.out.println("Message: " + message);
-        
+        String username=emailclient.username;
+        String password=emailclient.password;    
+        String host=determineSMTPHost(username);
+        //Properties props=getSMTPProperties(host);
         
         Properties props = new Properties();
-        //props.put("mail.smtp.host", host);
+        props.put("mail.smtp.host", host);
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.port", "587");
@@ -54,28 +66,67 @@ public class SendMail extends javax.swing.JFrame {
             }
         });
         
-        Message messages = new MimeMessage(session);
-        messages.setFrom(new InternetAddress(emailclient.username));
-        messages.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-        messages.setSubject(subject);
-        messages.setText(message);
+        try{
+        
+          //Δημιουργια του email message
+          Message msg = new MimeMessage(session);
+          msg.setFrom(new InternetAddress(username));
+          msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+          msg.setSubject(subject);
+          //msg.setText(message);
+        
+        
+          //τμημα με το κειμενο αρχειο
+          MimeBodyPart messageBodyPart = new MimeBodyPart();
+          messageBodyPart.setText(message);
+          
+          //Δημιουργια του multipart για το περιεχομενο του email
+          Multipart multipart = new MimeMultipart();
+          multipart.addBodyPart(messageBodyPart);
+        
+          //τμημα με το συννημενο αρχειο
+          if (attachments !=null){
+            for (File attachment:attachments){
 
-        // Αποστολή του μηνύματος
-        Transport.send(messages);
+              
+            MimeBodyPart attachmentBodyPart=new MimeBodyPart();
+            DataSource source=new FileDataSource(attachment);
+            attachmentBodyPart.setDataHandler(new DataHandler(source));
+            attachmentBodyPart.setFileName(attachment.getName());
+            multipart.addBodyPart(attachmentBodyPart);
+            }
+         }
 
-        System.out.println("Email sent successfully");
+         // Προσθήκη του πολυμερούς μηνύματος στο κύριο μήνυμα email
+         msg.setContent(multipart);
+         // Αποστολή του μηνύματος
+         Transport.send(msg);
+
+         System.out.println("Email sent successfully");
+        } catch (MessagingException e){
+           throw new RuntimeException(e);
+        }
+      
     }
-
-        
-        
-       // Message mimeMessage = new MimeMessage(emailSession);
-        //mimeMessage.setFrom(new InternetAddress(user));
+    
+    private String determineSMTPHost(String email){
+        if (email.endsWith("@gmail.com")){
+            return "smtp.gmail.com";
+        } else if (email.endsWith("@yahoo.com")){
+            return "smtp.mail.yahoo.com";         
+        }else if (email.endsWith("@outlook.com")){
+            return "smtp.office365.com";
+        } else {
+           throw new IllegalArgumentException("Unsupported email provider.");
+        }
+    }
     /**
      * Creates new form SendMail
      */
     public SendMail() {
         initComponents();
         setDefaultCloseOperation(SendMail.DISPOSE_ON_CLOSE);
+        
     }
 
     /**
@@ -97,6 +148,7 @@ public class SendMail extends javax.swing.JFrame {
         btnSend = new javax.swing.JButton();
         btnAttach = new javax.swing.JButton();
         fileLabel = new javax.swing.JLabel();
+        lblPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -123,6 +175,22 @@ public class SendMail extends javax.swing.JFrame {
         });
 
         fileLabel.setText("No File Selected");
+        fileLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                fileLabelMouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout lblPanelLayout = new javax.swing.GroupLayout(lblPanel);
+        lblPanel.setLayout(lblPanelLayout);
+        lblPanelLayout.setHorizontalGroup(
+            lblPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 224, Short.MAX_VALUE)
+        );
+        lblPanelLayout.setVerticalGroup(
+            lblPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 338, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout jInternalFrame1Layout = new javax.swing.GroupLayout(jInternalFrame1.getContentPane());
         jInternalFrame1.getContentPane().setLayout(jInternalFrame1Layout);
@@ -130,27 +198,24 @@ public class SendMail extends javax.swing.JFrame {
             jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jInternalFrame1Layout.createSequentialGroup()
                 .addGap(70, 70, 70)
+                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(lblSubject, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lblMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(lblTo, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jInternalFrame1Layout.createSequentialGroup()
-                        .addComponent(lblTo, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(TextTo))
-                    .addGroup(jInternalFrame1Layout.createSequentialGroup()
                         .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(lblSubject, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lblMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(TextMessage, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
-                                .addComponent(TextSubject))
-                            .addGroup(jInternalFrame1Layout.createSequentialGroup()
-                                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(fileLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(btnAttach, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnSend, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(119, Short.MAX_VALUE))
+                            .addComponent(btnAttach, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
+                            .addComponent(lblPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(fileLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnSend, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(TextTo)
+                    .addComponent(TextSubject)
+                    .addComponent(TextMessage))
+                .addContainerGap(173, Short.MAX_VALUE))
         );
         jInternalFrame1Layout.setVerticalGroup(
             jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -173,7 +238,9 @@ public class SendMail extends javax.swing.JFrame {
                     .addComponent(btnAttach))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(fileLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(38, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -196,10 +263,11 @@ public class SendMail extends javax.swing.JFrame {
             String message = TextMessage.getText();
             
             try{
-                EmailSender(to,subject,message);
+                EmailSender(to,subject,message,SelectedFiles);
                 JOptionPane.showMessageDialog(this, "Email sent successfully");
+                this.dispose();
             } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Failed to send email: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Failed to send email: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         
             }        
            
@@ -213,11 +281,8 @@ public class SendMail extends javax.swing.JFrame {
         jFile.setFileSelectionMode(jFile.FILES_AND_DIRECTORIES);
         int result = jFile.showOpenDialog(null);
            long totalSize = 0;
-           File [] SelectedFiles = new File [0];
            if (result == jFile.APPROVE_OPTION) {
-               for (int i = 0; i < selectedFiles.size(); i++) {
-                fileLabel.setText("Selected: " + selectedFiles.get(i));
-            }
+                
                 SelectedFiles = jFile.getSelectedFiles();
                 for (File file : SelectedFiles) {
                     totalSize += file.length();
@@ -225,23 +290,38 @@ public class SendMail extends javax.swing.JFrame {
                     String fileName = file.getName();
                     System.out.println("Selected file path: " + filePath);
                     System.out.println("Selected file name: " + fileName);
+                       
                 }
-           }
-           if (totalSize > MAX_FILE_SIZE) {
-               JOptionPane.showMessageDialog(null, 
-                            "File size exceeds 30 MB. Please select a smaller file.", 
-                            "File Too Large", 
+                //lblPanel.removeAll();
+                lblPanel.setVisible(true);
+           
+                if (totalSize > (MAX_FILE_SIZE * SelectedFiles.length)) { // ελεγχος οτι τα αρχεια ειναι μικροτερα απο 30mb επι το πληθος τους
+                    JOptionPane.showMessageDialog(null, 
+                            "One File size exceeds 30 MB. Please select a smaller file.", 
+                            "One of your selected Files is too Large to be sent", 
                             JOptionPane.ERROR_MESSAGE);
+                }
+                else{
+                    for (File file : SelectedFiles){
+                        selectedFiles.add(file);
+                        if (SelectedFiles.length >= 1 ) {
+                            JLabel FileLabel1 = new JLabel (file.getName());
+                            lblPanel.add(FileLabel1);
+                            System.out.println("file name :" + file.getName());
+                        }
+                    }
+                    System.out.println("the files are:" + selectedFiles);
+                    fileLabel.setText("Selected: " + selectedFiles.get(0).getName());
+                } 
            }
-           else{
-               for (File file : SelectedFiles){
-                  selectedFiles.add(file.getName());
-               }
-               System.out.println("the file is:" + emailclient.selectedFiles);
-               
-           }
-        
+           lblPanel.revalidate();
+           lblPanel.repaint();
     }//GEN-LAST:event_btnAttachActionPerformed
+    
+    
+    private void fileLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileLabelMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fileLabelMouseClicked
 
     /**
      * @param args the command line arguments
@@ -287,6 +367,7 @@ public class SendMail extends javax.swing.JFrame {
     private javax.swing.JLabel fileLabel;
     private javax.swing.JInternalFrame jInternalFrame1;
     private javax.swing.JLabel lblMessage;
+    private javax.swing.JPanel lblPanel;
     private javax.swing.JLabel lblSubject;
     private javax.swing.JLabel lblTo;
     // End of variables declaration//GEN-END:variables

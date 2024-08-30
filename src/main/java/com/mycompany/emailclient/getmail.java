@@ -14,6 +14,9 @@ import javax.swing.DefaultListModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.ListSelectionModel;
+
+
 
 /**
  *
@@ -42,13 +45,16 @@ public class getmail extends javax.swing.JFrame {
         initComponents();
         addDataToTable();
     }
+    
     private void addDataToTable() {
         DefaultTableModel model = (DefaultTableModel) emailsTable.getModel();
+        model.setRowCount(0);
+        model.setRowCount(emailclient.subject.size());
+        emailsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        emailsTable.setRowSelectionAllowed(false);
+        emailsTable.setCellSelectionEnabled(true );
         
-       
-        for (int i = 0; i < emailclient.subject.size(); i++) {
-            model.addRow(new Object[]{null, null, null, null});
-        }   
+        
         
         for (int i = 0; i < emailclient.from.size(); i++) {
             model.setValueAt(emailclient.from.get(i), i, 0); // Adds data to the from column
@@ -64,7 +70,7 @@ public class getmail extends javax.swing.JFrame {
         }
         
     }
-
+        
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -88,8 +94,8 @@ public class getmail extends javax.swing.JFrame {
         comboboxSearch = new javax.swing.JComboBox<>();
         TextSearchMails = new javax.swing.JTextField();
         btnSearch = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        folderList = new javax.swing.JList<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -105,15 +111,28 @@ public class getmail extends javax.swing.JFrame {
 
         emailsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "From", "Subject", "Date", "Message"
+                "From", "Subject", "Date", "Message", "Favorite"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        emailsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         emailsTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 emailsTableMouseClicked(evt);
@@ -149,12 +168,12 @@ public class getmail extends javax.swing.JFrame {
 
         btnSearch.setText("Search");
 
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+        folderList.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Recieved", "Favorite", "Sent", "Draft", "Spam" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane1.setViewportView(jList1);
+        jScrollPane2.setViewportView(folderList);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -167,17 +186,16 @@ public class getmail extends javax.swing.JFrame {
                         .addComponent(btnCompose, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 396, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGap(503, 503, 503)
-                                .addComponent(btnReply, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnForward, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(splitPane, javax.swing.GroupLayout.PREFERRED_SIZE, 690, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                            .addGap(603, 603, 603)
+                            .addComponent(btnReply, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btnForward, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jScrollPane2)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(splitPane, javax.swing.GroupLayout.PREFERRED_SIZE, 690, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -194,15 +212,15 @@ public class getmail extends javax.swing.JFrame {
                     .addComponent(btnReply)
                     .addComponent(btnForward))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1)
-                    .addComponent(splitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(splitPane, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(comboboxSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(TextSearchMails, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(btnSearch)))
+                        .addComponent(btnSearch))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 403, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCompose)
@@ -229,7 +247,21 @@ public class getmail extends javax.swing.JFrame {
         if (selectedRow >= 0) {
             String emailText = emailclient.text.get(selectedRow);
             textScroll.setText(emailText);
-            
+        } 
+        if (evt.getClickCount() == 2){
+            int clickedColumn = emailsTable.columnAtPoint(evt.getPoint());
+            if ( (selectedRow >= 0) && (clickedColumn == 0) ) {
+                String emailText = emailclient.from.get(selectedRow);
+                textScroll.setText(emailText);
+            }
+            else if( (selectedRow >= 0) && (clickedColumn == 1) ){
+                String emailText = emailclient.subject.get(selectedRow);
+                textScroll.setText(emailText);
+            }
+            else if ( (selectedRow >= 0) && (clickedColumn == 2) ){
+                String emailText = emailclient.date.get(selectedRow);
+                textScroll.setText(emailText);
+            }
         }
     }//GEN-LAST:event_emailsTableMouseClicked
     private void openSendMail() {
@@ -282,8 +314,8 @@ public class getmail extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> comboboxSearch;
     private javax.swing.JTable emailsTable;
     private javax.swing.JTextArea emailsText;
-    private javax.swing.JList<String> jList1;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JList<String> folderList;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane scroll1;
     private javax.swing.JScrollPane scroll2;
     private javax.swing.JScrollPane scrollPane2;
