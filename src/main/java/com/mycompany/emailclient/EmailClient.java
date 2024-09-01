@@ -21,6 +21,7 @@ public class EmailClient {
     public static ArrayList<String> date = new ArrayList<>();
     public static String username;
     public static String password;
+    public static String host;
     
         public static void main(String args[]) {
         /* Set the Nimbus look and feel */

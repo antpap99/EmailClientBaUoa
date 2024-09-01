@@ -212,6 +212,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Refresh Inbox"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRefreshActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnReply">
       <Properties>

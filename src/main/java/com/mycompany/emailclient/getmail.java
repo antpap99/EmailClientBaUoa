@@ -4,6 +4,8 @@
  */
 package com.mycompany.emailclient;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.util.Properties;
@@ -14,7 +16,12 @@ import javax.swing.DefaultListModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.ListSelectionModel;
+import javax.swing.ListSelectionModel; 
+import java.util.ArrayList;
+import javax.mail.Address;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.io.*;
 
 
 
@@ -23,6 +30,8 @@ import javax.swing.ListSelectionModel;
  * @author antpap
  */
 public class getmail extends javax.swing.JFrame {
+    
+    public ArrayList<Message> messageList;
     EmailClient emailclient = new  EmailClient();
     public void getAttributes (){
         try{
@@ -154,6 +163,11 @@ public class getmail extends javax.swing.JFrame {
         });
 
         btnRefresh.setText("Refresh Inbox");
+        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRefreshActionPerformed(evt);
+            }
+        });
 
         btnReply.setText("Reply");
 
@@ -264,6 +278,88 @@ public class getmail extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_emailsTableMouseClicked
+
+    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
+        // TODO add your handling code here:
+        emailclient.subject.clear();
+        emailclient.from.clear();
+        emailclient.text.clear();
+        emailclient.date.clear();
+        Properties props = new Properties();
+                
+                props.put("mail.store.protocol", "imaps");
+                props.put("mail.imaps.host", emailclient.host);
+                props.put("mail.imaps.port", "993");
+                props.put("mail.imaps.ssl.enable", "true");
+                
+                try {
+                Session emailSession = Session.getInstance(props);
+                Store store = emailSession.getStore("imaps");
+                emailSession.setDebug(true);
+                // Connect to the IMAP server
+                store.connect(emailclient.host, emailclient.username, emailclient.password);
+
+                Folder emailFolder = store.getFolder("INBOX");
+                emailFolder.open(Folder.READ_ONLY);
+
+                Message[] messages = emailFolder.getMessages();
+                messageList = new ArrayList<>(); // Create a new ArrayList
+                Collections.addAll(messageList, messages); // Add all messages to the ArrayList
+                System.out.println("Number of emails: " + messages.length);
+                System.out.println("List of emails: " + messageList);
+                ArrayList <String> subjects = new ArrayList<>();
+                // Example: Print out subject of each email
+                for (Message message : messages) {
+                    String Subject = message.getSubject();
+                    Date date = message.getSentDate();
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String datestring = formatter.format(date);
+                    emailclient.subject.add(0, Subject);//πρωτο subject ειναι ιδιοηττα του αντικειμενου , δευτερο ειναι τοποικη μεταβλητη
+                    emailclient.date.add(0, datestring); // το 0 υποδηλωνει εισαγωγη στην κορυφη της ArrayList
+                    Address [] from = message.getFrom();
+                    for(Address address : from){
+                        if (address instanceof InternetAddress){
+                            InternetAddress internetFrom = (InternetAddress) address;
+                            String FROM1 = internetFrom.getAddress();
+                            String FROM2 = internetFrom.getPersonal();
+                            String FROM = FROM2 + " , " + FROM1;
+                            emailclient.from.add(0, FROM); // το 0 υποδηλωνει εισαγωγη στην κορυφη της ArrayList
+                        }
+                        if(message instanceof MimeMessage){
+                            MimeMessage mimeMessage = (MimeMessage) message;
+                            try{
+                                Object content = mimeMessage.getContent();
+                                if(content instanceof String){
+                                    String textContent = (String) content;
+                                } else if (content instanceof Multipart){
+                                    Multipart multipart = (Multipart) content;
+                                    for(int i = 0; i < multipart.getCount(); i++){
+                                        BodyPart bodyPart = multipart.getBodyPart(i);
+                                        if(bodyPart.isMimeType("text/plain")){
+                                            String plainText = (String) bodyPart.getContent();
+                                            emailclient.text.add(0, plainText);
+                                        }
+                                    }
+                                }
+                            }catch (IOException | MessagingException e) {
+                                    // Χειρισμός σφάλματος
+                            }       
+                        }
+                    }
+                }
+                emailFolder.close(false);
+                    store.close();
+                } catch (NoSuchProviderException e) {
+                            e.printStackTrace();
+                            
+                } catch (MessagingException e) {
+                            e.printStackTrace();
+                            
+                }
+        addDataToTable();
+        emailsTable.revalidate();
+        emailsTable.repaint();
+    }//GEN-LAST:event_btnRefreshActionPerformed
     private void openSendMail() {
         SendMail sendmail = new SendMail();
         sendmail.setVisible(true);

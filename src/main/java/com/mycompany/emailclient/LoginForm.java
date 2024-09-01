@@ -312,6 +312,7 @@ public class LoginForm extends javax.swing.JFrame {
             String host = TextServer.getText();
             String password = new String(TextPassword.getPassword());
             emailclient.password = password ;
+            emailclient.host = host ;
             
         // Perform email validation
         EmailReceiver emailReceiver = new EmailReceiver();
